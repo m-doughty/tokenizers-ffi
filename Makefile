@@ -7,14 +7,17 @@ ifeq ($(OS),Windows_NT)
 	LIB_EXT := dll
 	DYLIB_PREFIX :=
 	INSTALL_LIB_PATH := /usr/local/bin
+	LIB_EXTRA := 
 else ifeq ($(UNAME_S),Darwin)
 	LIB_EXT := dylib
 	DYLIB_PREFIX := lib
 	INSTALL_LIB_PATH := /usr/local/lib
+	LIB_EXTRA :=
 else
 	LIB_EXT := so
 	DYLIB_PREFIX := lib
 	INSTALL_LIB_PATH := /usr/local/lib
+	LIB_EXTRA := -lm -lsubunit
 endif
 
 # Output paths
@@ -65,11 +68,11 @@ $(BUILD_DIR):
 
 $(TEST_BIN): $(DYLIB) tests/c/test_ffi.c | $(BUILD_DIR)
 	cc -Iinclude -I$(CHECK_PREFIX)/include tests/c/test_ffi.c -o $(TEST_BIN) \
-		-L$(LIB_DIR) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck -lm
+		-L$(LIB_DIR) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck $(LIB_EXTRA)
 
 $(TEST_BIN_SAN): $(DYLIB) tests/c/test_ffi.c | $(BUILD_DIR)
 	cc -g -O0 $(SAN_FLAGS) -Iinclude -I$(CHECK_PREFIX)/include tests/c/test_ffi.c \
-		-o $(TEST_BIN_SAN) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck -lm
+		-o $(TEST_BIN_SAN) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck $(LIB_EXTRA)
 
 install: $(DYLIB)
 	install -Dm755 $(DYLIB) $(INSTALL_LIB_PATH)/$(notdir $(DYLIB))
