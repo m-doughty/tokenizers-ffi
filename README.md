@@ -116,5 +116,8 @@ On MacOS, memory leak detection is limited and LSan is unsupported.
 ## 📜 License
 
 Artistic License 2.0
-(C) 2024 Matt Doughty `<matt@apogee.guru>`
+(C) 2025 Matt Doughty `<matt@apogee.guru>`
 
+The file at `tests/fixtures/tokenizer.json` is (C) 2025 Mistral AI.
+
+It is extracted from Mistral Nemo, which is an Apache 2.0 licensed model.
