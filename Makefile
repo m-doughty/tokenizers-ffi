@@ -65,11 +65,11 @@ $(BUILD_DIR):
 
 $(TEST_BIN): $(DYLIB) tests/c/test_ffi.c | $(BUILD_DIR)
 	cc -Iinclude -I$(CHECK_PREFIX)/include tests/c/test_ffi.c -o $(TEST_BIN) \
-		-L$(LIB_DIR) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck
+		-L$(LIB_DIR) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck -lm
 
 $(TEST_BIN_SAN): $(DYLIB) tests/c/test_ffi.c | $(BUILD_DIR)
 	cc -g -O0 $(SAN_FLAGS) -Iinclude -I$(CHECK_PREFIX)/include tests/c/test_ffi.c \
-		-o $(TEST_BIN_SAN) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck
+		-o $(TEST_BIN_SAN) $(LIB_DIR)/$(DYLIB_NAME) -L$(CHECK_PREFIX)/lib -lcheck -lm
 
 install: $(DYLIB)
 	install -Dm755 $(DYLIB) $(INSTALL_LIB_PATH)/$(notdir $(DYLIB))
