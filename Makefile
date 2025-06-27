@@ -58,7 +58,7 @@ test-rust-sanitize:
 	@rustup show active-toolchain | grep -q nightly || \
 	(echo "❌ Rust nightly required for sanitizer tests"; exit 1)
 	RUSTFLAGS="-Z sanitizer=address -C opt-level=0 -C debuginfo=2" \
-	cargo +nightly test -Z build-std -- --nocapture
+	cargo +nightly test -Z build-std=std -- --nocapture
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
