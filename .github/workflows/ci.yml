@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.rust }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        rust: [stable, nightly]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Rust (${{ matrix.rust }})
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt
+
+      # Linux
+      - name: Install Check (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y check
+
+      # macOS
+      - name: Install Check (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install check
+
+      # Windows
+      - name: Set up MSYS2 and Install Check (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-check
+            mingw-w64-x86_64-pkg-config
+
+      # Build & Test on Unix (macOS + Linux)
+      - name: Build and Test (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          CHECK_PREFIX=$(brew --prefix check 2>/dev/null || echo /usr)
+          if [[ "${{ matrix.rust }}" == "nightly" ]]; then
+            make test-sanitize CHECK_PREFIX="$CHECK_PREFIX"
+          else
+            make test CHECK_PREFIX="$CHECK_PREFIX"
+          fi
+
+      # Build & Test on Windows
+      - name: Build and Test (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          export CHECK_PREFIX=/mingw64
+          if [ "${{ matrix.rust }}" = "nightly" ]; then
+            make test-sanitize CHECK_PREFIX="$CHECK_PREFIX"
+          else
+            make test CHECK_PREFIX="$CHECK_PREFIX"
+          fi
+
