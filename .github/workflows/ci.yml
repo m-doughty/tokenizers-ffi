@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         rust: [stable, nightly]
 
     steps:
@@ -52,11 +52,8 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           CHECK_PREFIX=$(brew --prefix check 2>/dev/null || echo /usr)
-          if [[ "${{ matrix.rust }}" == "nightly" ]]; then
-            make test-sanitize CHECK_PREFIX="$CHECK_PREFIX"
-          else
-            make test CHECK_PREFIX="$CHECK_PREFIX"
-          fi
+          make test-c-sanitize CHECK_PREFIX="$CHECK_PREFIX"
+          make test-rust CHECK_PREFIX="$CHECK_PREFIX"
 
       # Build & Test on Windows
       - name: Build and Test (Windows)
@@ -64,9 +61,5 @@ jobs:
         shell: msys2 {0}
         run: |
           export CHECK_PREFIX=/mingw64
-          if [ "${{ matrix.rust }}" = "nightly" ]; then
-            make test-sanitize CHECK_PREFIX="$CHECK_PREFIX"
-          else
-            make test CHECK_PREFIX="$CHECK_PREFIX"
-          fi
+          make test CHECK_PREFIX="$CHECK_PREFIX"
 
