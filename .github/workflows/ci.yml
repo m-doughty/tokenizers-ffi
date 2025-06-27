@@ -40,10 +40,10 @@ jobs:
         with:
           update: true
           install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-check
-            mingw-w64-x86_64-pkg-config
+            gcc
+            make
+            check
+            pkg-config
 
       # Build & Test on Unix (macOS + Linux)
       - name: Build and Test (Unix)
